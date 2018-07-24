@@ -51,20 +51,25 @@ if __name__ == "__main__":
         fns = get_list_fns(_vel, gal=True, data_root=data_root)
         
         for fn in fns:
-            hpix, hthets = get_RHT_data(data_root+fn, returnbp=False)
+            hpix, hthets, backproj = get_RHT_data(data_root+fn, returnbp=True)
         
+            IRHT[hpix, v_i] = np.nansum(hthets, axis=-1)
             QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=-1)
             URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=-1)
+            
+            if np.nansum(hthets) != np.nansum(backproj):
+                print("hthets sum does not equal backprojection!")
     
     theta_RHT_n_v = np.mod(0.5*np.arctan2(URHT, QRHT), np.pi)
+    theta_RHT_n_v[np.where(IRHT <= 0)] = None
     
     IHI = np.nansum(HI_n_v, axis=-1)
     QHI = np.nansum(HI_n_v*np.cos(2*theta_RHT_n_v), axis=-1)
     UHI = np.nansum(HI_n_v*np.sin(2*theta_RHT_n_v), axis=-1)
 
-    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}.fits".format(startvel, stopvel), IHI)
-    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}.fits".format(startvel, stopvel), QHI)
-    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}.fits".format(startvel, stopvel), UHI)
+    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut.fits".format(startvel, stopvel), IHI)
+    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut.fits".format(startvel, stopvel), QHI)
+    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut.fits".format(startvel, stopvel), UHI)
 
         
         
