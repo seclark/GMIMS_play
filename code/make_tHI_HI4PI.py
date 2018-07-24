@@ -54,15 +54,17 @@ if __name__ == "__main__":
         for fn in fns:
             hpix, hthets, backproj = get_RHT_data(data_root+fn, returnbp=True)
         
-            IRHT[hpix, v_i] = np.nansum(hthets, axis=-1)
-            QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=-1)
-            URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=-1)
+            IRHT[hpix, v_i] = np.nansum(hthets, axis=1)
+            QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
+            URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
             
             if np.nansum(hthets) != np.nansum(backproj):
                 print("hthets sum {} does not equal backprojection {}".format(np.nansum(hthets), np.nansum(backproj)))
                 print("hthets shape", hthets.shape)
                 print("backproj nonzero number", len(np.nonzero(backproj)[0]))
                 print("int hthets nonzero number", len(np.nonzero(IRHT[:, v_i])[0]))
+                print(len(hpix))
+                print(hpix[0], hpix[-1])
     
     theta_RHT_n_v = np.mod(0.5*np.arctan2(URHT, QRHT), np.pi)
     theta_RHT_n_v[np.where(IRHT <= 0)] = None
