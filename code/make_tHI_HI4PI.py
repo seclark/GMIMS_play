@@ -25,6 +25,7 @@ if __name__ == "__main__":
     ntheta = 165
     
     # Values of theta for RHT output
+    wlen = 75
     thets = RHT_tools.get_thets(wlen, save = False)
     
     all_vels = np.arange(81, 102)
