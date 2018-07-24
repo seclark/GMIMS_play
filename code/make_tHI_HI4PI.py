@@ -34,6 +34,7 @@ if __name__ == "__main__":
     startvel = all_vels[0]
     stopvel = all_vels[-1]
     
+    IRHT = np.zeros((npix, nvels), np.float_)
     QRHT = np.zeros((npix, nvels), np.float_)
     URHT = np.zeros((npix, nvels), np.float_)
     HI_n_v = np.zeros((npix, nvels), np.float_)
