@@ -25,6 +25,14 @@ if __name__ == "__main__":
     npix = 12*nside**2
     ntheta = 165
     
+    # smooth QRHT and URHT
+    smoothQU = True
+    smooth_fwhm = 60
+    if smoothQU:
+        smoothQUstr = "_smooth{}".format(smooth_fwhm)
+    else:
+        smoothQUstr = ""
+    
     # Values of theta for RHT output
     wlen = 75
     thets = RHT_tools.get_thets(wlen, save = False)
@@ -57,9 +65,12 @@ if __name__ == "__main__":
             IRHT[hpix, v_i] = np.nansum(np.array(hthets), axis=1)
             QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
             URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
-        
+            
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
-
+        
+        # smooth each map
+        (IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]) = hp.sphtfunc.smoothing(IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i], fwhm=np.radians(fwhm/60.), pol=True)
+    print(IRHT.shape)
     theta_RHT_n_v = np.mod(0.5*np.arctan2(URHT, QRHT), np.pi)
     theta_RHT_n_v[np.where(IRHT <= 0)] = None
     
@@ -67,9 +78,9 @@ if __name__ == "__main__":
     QHI = np.nansum(HI_n_v*np.cos(2*theta_RHT_n_v), axis=-1)
     UHI = np.nansum(HI_n_v*np.sin(2*theta_RHT_n_v), axis=-1)
 
-    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut.fits".format(startvel, stopvel), IHI)
-    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut.fits".format(startvel, stopvel), QHI)
-    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut.fits".format(startvel, stopvel), UHI)
+    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
+    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
+    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
 
         
         
