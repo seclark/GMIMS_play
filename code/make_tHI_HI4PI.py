@@ -58,7 +58,7 @@ if __name__ == "__main__":
             QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
             URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
             
-            print(hthets[0, :])
+            print(hthets[0, :], np.nansum(hthets[0, :]), np.nansum(backproj[hpix[0]]))
             
             if np.nansum(hthets) != np.nansum(backproj):
                 print("hthets sum {} does not equal backprojection {}".format(np.nansum(hthets), np.nansum(backproj)))
@@ -67,6 +67,7 @@ if __name__ == "__main__":
                 print("int hthets nonzero number", len(np.nonzero(IRHT[hpix, v_i])[0]))
                 print(len(hpix))
                 print(hpix[0], hpix[-1])
+                print("max backproj {}, max hthets {}".format(np.nanmax(backproj), np.nanmax(hthets), np.nanmax(np.nansum(hthets, axis=-1))))
                 
             else:
                 print("hthets sum {} equals backprojection {}".format(np.nansum(hthets), np.nansum(backproj)))
