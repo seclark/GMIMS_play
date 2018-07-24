@@ -53,8 +53,8 @@ if __name__ == "__main__":
         for fn in fns:
             hpix, hthets = get_RHT_data(data_root+fn, returnbp=False)
         
-            QRHT[hpix, _vel] = np.nansum(np.cos(2*thets)*hthets, axis=-1)
-            URHT[hpix, _vel] = np.nansum(np.sin(2*thets)*hthets, axis=-1)
+            QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=-1)
+            URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=-1)
     
     theta_RHT_n_v = np.mod(0.5*np.arctan2(URHT, QRHT), np.pi)
     
