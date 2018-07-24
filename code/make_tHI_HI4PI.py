@@ -60,6 +60,7 @@ if __name__ == "__main__":
             
             if np.nansum(hthets) != np.nansum(backproj):
                 print("hthets sum {} does not equal backprojection {}".format(np.nansum(hthets), np.nansum(backproj)))
+                print("hthets shape", hthets.shape)
     
     theta_RHT_n_v = np.mod(0.5*np.arctan2(URHT, QRHT), np.pi)
     theta_RHT_n_v[np.where(IRHT <= 0)] = None
