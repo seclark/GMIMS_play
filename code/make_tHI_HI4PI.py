@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 print("hthets sum {} does not equal backprojection {}".format(np.nansum(hthets), np.nansum(backproj)))
                 print("hthets shape", hthets.shape)
                 print("backproj nonzero number", len(np.nonzero(backproj)[0]))
-                print("int hthets nonzero number", len(np.nonzero(IRHT[:, v_i])[0]))
+                print("int hthets nonzero number", len(np.nonzero(IRHT[hpix, v_i])[0]))
                 print(len(hpix))
                 print(hpix[0], hpix[-1])
                 
