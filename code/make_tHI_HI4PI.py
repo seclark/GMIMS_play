@@ -69,7 +69,7 @@ if __name__ == "__main__":
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
         
         # smooth each map
-        (IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]) = hp.sphtfunc.smoothing(IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.), pol=True)
+        (IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]) = hp.sphtfunc.smoothing([IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]], fwhm=np.radians(smooth_fwhm/60.), pol=True)
         HI_n_v[:, v_i] = hp.sphtfunc.smoothing(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.), pol=False)
         
     print(IRHT.shape)
