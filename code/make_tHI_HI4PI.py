@@ -54,7 +54,7 @@ if __name__ == "__main__":
         for fn in fns:
             hpix, hthets, backproj = get_RHT_data(data_root+fn, returnbp=True)
         
-            IRHT[hpix, v_i] = np.nansum(hthets, axis=1)
+            IRHT[hpix, v_i] = np.nansum(np.array(hthets), axis=1)
             QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
             URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
             
