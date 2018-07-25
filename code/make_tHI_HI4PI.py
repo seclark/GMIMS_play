@@ -27,7 +27,7 @@ if __name__ == "__main__":
     
     # smooth QRHT and URHT
     smoothQU = True
-    smooth_fwhm = 60
+    smooth_fwhm = 90
     if smoothQU:
         smoothQUstr = "_smooth{}".format(smooth_fwhm)
     else:
