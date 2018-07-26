@@ -1,6 +1,7 @@
 import numpy as np
 import healpy as hp
 import h5py
+import copy
 
 import sys 
 sys.path.insert(0, '../../ForegroundModels/code')
