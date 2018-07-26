@@ -8,6 +8,33 @@ from make_data_table import get_RHT_data, get_list_fns, get_start_stop_hpx
 sys.path.insert(0, '../../RHT')
 import RHT_tools
 
+def masked_smoothing(U, rad=5.0):    
+    # from https://stackoverflow.com/questions/50009141/smoothing-without-filling-missing-values-with-zeros 
+    V=U.copy()
+    V[U!=U]=0
+    VV=hp.smoothing(V, fwhm=np.radians(rad))    
+    W=0*U.copy()+1
+    W[U!=U]=0
+    WW=hp.smoothing(W, fwhm=np.radians(rad))    
+    return VV/WW
+    
+def smooth_overnans(map, fwhm = 15):
+    """
+    Takes map with nans, etc set to 0
+    """
+    mask = np.ones(map.shape, np.float_)
+    mask[np.isnan(map)] = 0
+    
+    map_zeroed = copy.copy(map)
+    map_zeroed[mask == 0] = 0
+    
+    blurred_map = hp.smoothing(map_zeroed, fwhm=fwhm, pol=False)
+    blurred_mask = hp.smoothing(mask, fwhm=fwhm, pol=False)
+    
+    map = blurred_map / blurred_mask
+  
+    return map
+
 if __name__ == "__main__":
     LOCAL = False
         
@@ -68,12 +95,17 @@ if __name__ == "__main__":
             
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
         IRHTslice = IRHT[:, v_i]
-        QRHT[np.where(IRHTslice <= 0), v_i] = None
-        URHT[np.where(IRHTslice <= 0), v_i] = None
+        QRHT[np.where(IRHTslice <= 0), v_i] = 0 # set to zero
+        URHT[np.where(IRHTslice <= 0), v_i] = 0
         
         # smooth each map
-        (IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]) = hp.sphtfunc.smoothing([IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]], fwhm=np.radians(smooth_fwhm/60.), pol=True)
-        HI_n_v[:, v_i] = hp.sphtfunc.smoothing(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.), pol=False)
+        IRHT[:, v_i] = smooth_overnans([IRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        QRHT[:, v_i] = smooth_overnans([QRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        URHT[:, v_i] = smooth_overnans([URHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        HI_n_v[:, v_i] = smooth_overnans([HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        
+        #(IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]) = hp.sphtfunc.smoothing([IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]], fwhm=np.radians(smooth_fwhm/60.), pol=True)
+        #HI_n_v[:, v_i] = hp.sphtfunc.smoothing(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.), pol=False)
         
     print(IRHT.shape)
     theta_RHT_n_v = np.mod(0.5*np.arctan2(URHT, QRHT), np.pi)
@@ -83,9 +115,9 @@ if __name__ == "__main__":
     QHI = np.nansum(HI_n_v*np.cos(2*theta_RHT_n_v), axis=-1)
     UHI = np.nansum(HI_n_v*np.sin(2*theta_RHT_n_v), axis=-1)
 
-    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
-    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
-    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
+    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth2{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
+    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth2{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
+    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth2{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
 
         
         
