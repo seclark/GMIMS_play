@@ -99,10 +99,10 @@ if __name__ == "__main__":
         URHT[np.where(IRHTslice <= 0), v_i] = 0
         
         # smooth each map
-        IRHT[:, v_i] = smooth_overnans([IRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
-        QRHT[:, v_i] = smooth_overnans([QRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
-        URHT[:, v_i] = smooth_overnans([URHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
-        HI_n_v[:, v_i] = smooth_overnans([HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        IRHT[:, v_i] = smooth_overnans(IRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        QRHT[:, v_i] = smooth_overnans(QRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        URHT[:, v_i] = smooth_overnans(URHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        HI_n_v[:, v_i] = smooth_overnans(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
         
         #(IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]) = hp.sphtfunc.smoothing([IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]], fwhm=np.radians(smooth_fwhm/60.), pol=True)
         #HI_n_v[:, v_i] = hp.sphtfunc.smoothing(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.), pol=False)
