@@ -122,8 +122,10 @@ if __name__ == "__main__":
         QRHT = np.cos(2*thetaRHT)
         URHT = np.sin(2*thetaRHT)
         
-        QRHT[np.where(IRHT <= 0), v_i] = None # set to nan
-        URHT[np.where(IRHT <= 0), v_i] = None
+        #QRHT[np.where(IRHT <= 0), v_i] = None # set to nan
+        #URHT[np.where(IRHT <= 0), v_i] = None
+        QRHT[np.where(IRHT <= 0)] = None # set to nan
+        URHT[np.where(IRHT <= 0)] = None
         
         # smooth each map
         #IRHT[:, v_i] = smooth_overnans(IRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
