@@ -99,7 +99,7 @@ if __name__ == "__main__":
         for fn in fns:
             #hpix, hthets, backproj = get_RHT_data(data_root+fn, returnbp=True)
             hpix, hthets = get_RHT_data(data_root+fn, returnbp=False)
-            print(hthets[0], len(hthets), hthets.shape)
+            #print(hthets[0], len(hthets), hthets.shape)
             #IRHT[hpix, v_i] = np.nansum(np.array(hthets), axis=1)
             #QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
             #URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
