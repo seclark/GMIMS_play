@@ -75,6 +75,7 @@ if __name__ == "__main__":
     URHT = np.zeros((npix, nvels), np.float_)
     HI_n_v = np.zeros((npix, nvels), np.float_)
     theta_RHT_n_v = np.zeros((npix, nvels), np.float_)
+    backproj_n_v = np.zeros((npix, nvels), np.float_)
     
     # step through all velocities
     for v_i, _vel in enumerate(all_vels):
@@ -93,8 +94,8 @@ if __name__ == "__main__":
             IRHT[hpix, v_i] = np.nansum(np.array(hthets), axis=1)
             QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
             URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
-            
-            print("number of hpix: {}, nonzero IRHT: {}".format(len(hpix), len(np.nonzero(IRHT[:, v_i])[0])))
+            backproj_n_v[hpix, v_i] = backproj
+            print("number of hpix: {}, nonzero IRHT: {}, backproj: {}".format(len(hpix), len(np.nonzero(IRHT[:, v_i])[0]), len(np.nonzero(backproj)[0])))))
             
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
         IRHTslice = IRHT[:, v_i]
