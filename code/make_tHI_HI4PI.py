@@ -55,7 +55,7 @@ if __name__ == "__main__":
     
     # smooth QRHT and URHT
     smoothQU = True
-    smooth_fwhm = 60
+    smooth_fwhm = 180
     if smoothQU:
         smoothQUstr = "_smooth{}".format(smooth_fwhm)
     else:
@@ -157,9 +157,9 @@ if __name__ == "__main__":
     #hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
     #hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
     #hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
-    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), I_HI_tot)
-    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), QRHT_tot)
-    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), URHT_tot)
+    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), I_HI_tot)
+    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), QRHT_tot)
+    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), URHT_tot)
 
         
         
