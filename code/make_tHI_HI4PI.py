@@ -94,7 +94,7 @@ if __name__ == "__main__":
             QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
             URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
             
-            print("number of hpix: {}, nonzero IRHT: {}".format(len(hpix), len(np.nonzero(IRHT[:, v_i]))))
+            print("number of hpix: {}, nonzero IRHT: {}".format(len(hpix), len(np.nonzero(IRHT[:, v_i])[0])))
             
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
         IRHTslice = IRHT[:, v_i]
