@@ -94,7 +94,7 @@ if __name__ == "__main__":
             IRHT[hpix, v_i] = np.nansum(np.array(hthets), axis=1)
             QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
             URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
-            backproj_n_v[hpix, v_i] = backproj
+            backproj_n_v[hpix, v_i] = backproj[hpix]
             print("number of hpix: {}, nonzero IRHT: {}, backproj: {}".format(len(hpix), len(np.nonzero(IRHT[:, v_i])[0]), len(np.nonzero(backproj_n_v[:, v_i])[0])))
             
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
