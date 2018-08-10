@@ -100,8 +100,9 @@ if __name__ == "__main__":
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
         IRHTslice = IRHT[:, v_i]
         print("for vel {}, setting {} to zero".format(_vel, len(np.where(IRHTslice <= 0)[0])))
-        QRHT[np.where(IRHTslice <= 0), v_i] = 0 # set to zero
-        URHT[np.where(IRHTslice <= 0), v_i] = 0
+        QRHT[np.where(IRHTslice <= 0), v_i] = None # set to nan
+        URHT[np.where(IRHTslice <= 0), v_i] = None
+        print("nonnan Q = {}".format(len(np.nonzero(QRHT[~np.isnan(QRHT)])[0])))
         
         # smooth each map
         IRHT[:, v_i] = smooth_overnans(IRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
@@ -120,9 +121,9 @@ if __name__ == "__main__":
     QHI = np.nansum(HI_n_v*np.cos(2*theta_RHT_n_v), axis=-1)
     UHI = np.nansum(HI_n_v*np.sin(2*theta_RHT_n_v), axis=-1)
 
-    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth3{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
-    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth3{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
-    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth3{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
+    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth4{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
+    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth4{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
+    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth4{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
 
         
         
