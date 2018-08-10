@@ -21,7 +21,7 @@ def masked_smoothing(U, rad=5.0):
     
 def smooth_overnans(map, fwhm = 15):
     """
-    Takes map with nans, etc set to 0
+    Takes map with nans, etc
     """
     mask = np.ones(map.shape, np.float_)
     mask[np.isnan(map)] = 0
@@ -70,15 +70,23 @@ if __name__ == "__main__":
     startvel = all_vels[0]
     stopvel = all_vels[-1]
     
-    IRHT = np.zeros((npix, nvels), np.float_)
-    QRHT = np.zeros((npix, nvels), np.float_)
-    URHT = np.zeros((npix, nvels), np.float_)
+    #IRHT = np.zeros((npix, nvels), np.float_)
+    #QRHT = np.zeros((npix, nvels), np.float_)
+    #URHT = np.zeros((npix, nvels), np.float_)
     HI_n_v = np.zeros((npix, nvels), np.float_)
-    theta_RHT_n_v = np.zeros((npix, nvels), np.float_)
-    backproj_n_v = np.zeros((npix, nvels), np.float_)
+    #theta_RHT_n_v = np.zeros((npix, nvels), np.float_)
+    #backproj_n_v = np.zeros((npix, nvels), np.float_)
+    IRHT_tot = np.zeros(npix)
+    QRHT_tot = np.zeros(npix)
+    URHT_tot = np.zeros(npix)
+    I_HI_tot = np.zeros(npix)
     
     # step through all velocities
     for v_i, _vel in enumerate(all_vels):
+        
+        IRHT = np.zeros(npix)
+        QRHT = np.zeros(npix)
+        URHT = np.zeros(npix)
         
         # load HI intensity data 
         hi4pi_fn = hi4pi_root + 'HI4PI_120kms.h5'
@@ -89,41 +97,67 @@ if __name__ == "__main__":
         fns = get_list_fns(_vel, gal=True, data_root=data_root)
         
         for fn in fns:
-            hpix, hthets, backproj = get_RHT_data(data_root+fn, returnbp=True)
-        
-            IRHT[hpix, v_i] = np.nansum(np.array(hthets), axis=1)
-            QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
-            URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
-            backproj_n_v[hpix, v_i] = backproj[hpix]
-            print("number of hpix: {}, nonzero IRHT: {}, backproj: {}".format(len(hpix), len(np.nonzero(IRHT[:, v_i])[0]), len(np.nonzero(backproj_n_v[:, v_i])[0])))
+            #hpix, hthets, backproj = get_RHT_data(data_root+fn, returnbp=True)
+            hpix, hthets = get_RHT_data(data_root+fn, returnbp=False)
+            print(hthets[0], len(hthets), hthets.shape)
+            #IRHT[hpix, v_i] = np.nansum(np.array(hthets), axis=1)
+            #QRHT[hpix, v_i] = np.nansum(np.cos(2*thets)*hthets, axis=1)
+            #URHT[hpix, v_i] = np.nansum(np.sin(2*thets)*hthets, axis=1)
+            IRHT[hpix] = np.nansum(np.array(hthets), axis=1)
+            QRHT[hpix] = np.nansum(np.cos(2*thets)*hthets, axis=1)
+            URHT[hpix] = np.nansum(np.sin(2*thets)*hthets, axis=1)
+            
+            #backproj_n_v[hpix, v_i] = backproj[hpix]
+            #print("number of hpix: {}, nonzero IRHT: {}, backproj: {}".format(len(hpix), len(np.nonzero(IRHT[:, v_i])[0]), len(np.nonzero(backproj_n_v[:, v_i])[0])))
             
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
-        IRHTslice = IRHT[:, v_i]
-        print("for vel {}, setting {} to zero".format(_vel, len(np.where(IRHTslice <= 0)[0])))
-        QRHT[np.where(IRHTslice <= 0), v_i] = None # set to nan
-        URHT[np.where(IRHTslice <= 0), v_i] = None
-        print("nonnan Q = {}".format(len(np.nonzero(QRHT[~np.isnan(QRHT)])[0])))
+        #IRHTslice = IRHT[:, v_i]
+        #print("for vel {}, setting {} to zero".format(_vel, len(np.where(IRHTslice <= 0)[0])))
+        #QRHT[np.where(IRHTslice <= 0), v_i] = None # set to nan
+        #URHT[np.where(IRHTslice <= 0), v_i] = None
+        #print("nonnan Q = {}".format(len(np.nonzero(QRHT[~np.isnan(QRHT)])[0])))
+        
+        # remove RHT amplitude by normalizing to 1
+        thetaRHT = np.mod(0.5*np.arctan2(URHT, QRHT), np.pi)
+        QRHT = np.cos(2*thetaRHT)
+        URHT = np.sin(2*thetaRHT)
+        
+        QRHT[np.where(IRHT <= 0), v_i] = None # set to nan
+        URHT[np.where(IRHT <= 0), v_i] = None
         
         # smooth each map
-        IRHT[:, v_i] = smooth_overnans(IRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
-        QRHT[:, v_i] = smooth_overnans(QRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
-        URHT[:, v_i] = smooth_overnans(URHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
-        HI_n_v[:, v_i] = smooth_overnans(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        #IRHT[:, v_i] = smooth_overnans(IRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        #QRHT[:, v_i] = smooth_overnans(QRHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        #URHT[:, v_i] = smooth_overnans(URHT[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        #HI_n_v[:, v_i] = smooth_overnans(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        IRHTsmooth = smooth_overnans(IRHT, fwhm=np.radians(smooth_fwhm/60.))
+        QRHTsmooth = smooth_overnans(QRHT, fwhm=np.radians(smooth_fwhm/60.))
+        URHTsmooth = smooth_overnans(URHT, fwhm=np.radians(smooth_fwhm/60.))
+        I_HIsmooth = smooth_overnans(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.))
+        
         
         #(IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]) = hp.sphtfunc.smoothing([IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]], fwhm=np.radians(smooth_fwhm/60.), pol=True)
         #HI_n_v[:, v_i] = hp.sphtfunc.smoothing(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.), pol=False)
         
-        print("IRHT shape {} IRHTslice shape {}".format(IRHT.shape, IRHTslice.shape))
-        theta_RHT_n_v[:, v_i] = np.mod(0.5*np.arctan2(URHT[:, v_i], QRHT[:, v_i]), np.pi)
-        theta_RHT_n_v[np.where(IRHTslice <= 0), v_i] = None
+        #print("IRHT shape {} IRHTslice shape {}".format(IRHT.shape, IRHTslice.shape))
+        #theta_RHT_n_v[:, v_i] = np.mod(0.5*np.arctan2(URHT[:, v_i], QRHT[:, v_i]), np.pi)
+        #theta_RHT_n_v[np.where(IRHTslice <= 0), v_i] = None
         
-    IHI = np.nansum(HI_n_v, axis=-1)
-    QHI = np.nansum(HI_n_v*np.cos(2*theta_RHT_n_v), axis=-1)
-    UHI = np.nansum(HI_n_v*np.sin(2*theta_RHT_n_v), axis=-1)
+        I_HI_tot += I_HIsmooth
+        QRHT_tot += I_HIsmooth*QRHTsmooth
+        URHT_tot += I_HIsmooth*URHTsmooth
+        #IRHT_tot += IRHTsmooth
+        
+    #IHI = np.nansum(HI_n_v, axis=-1)
+    #QHI = np.nansum(HI_n_v*np.cos(2*theta_RHT_n_v), axis=-1)
+    #UHI = np.nansum(HI_n_v*np.sin(2*theta_RHT_n_v), axis=-1)
 
-    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth4{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
-    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth4{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
-    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth4{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
+    #hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
+    #hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
+    #hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
+    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), I_HI_tot)
+    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), QRHT_tot)
+    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth5{}.fits".format(startvel, stopvel, smoothQUstr), URHT_tot)
 
         
         
