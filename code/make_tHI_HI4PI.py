@@ -74,7 +74,7 @@ if __name__ == "__main__":
     QRHT = np.zeros((npix, nvels), np.float_)
     URHT = np.zeros((npix, nvels), np.float_)
     HI_n_v = np.zeros((npix, nvels), np.float_)
-    
+    theta_RHT_n_v = np.zeros((npix, nvels), np.float_)
     
     # step through all velocities
     for v_i, _vel in enumerate(all_vels):
@@ -96,6 +96,7 @@ if __name__ == "__main__":
             
             # note: np.nansum(hthets) != np.nansum(backproj) because the backprojection is normalized!
         IRHTslice = IRHT[:, v_i]
+        print("for vel {}, setting {} to zero".format(_vel, len(np.where(IRHTslice <= 0)[0])))
         QRHT[np.where(IRHTslice <= 0), v_i] = 0 # set to zero
         URHT[np.where(IRHTslice <= 0), v_i] = 0
         
@@ -108,17 +109,17 @@ if __name__ == "__main__":
         #(IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]) = hp.sphtfunc.smoothing([IRHT[:, v_i], QRHT[:, v_i], URHT[:, v_i]], fwhm=np.radians(smooth_fwhm/60.), pol=True)
         #HI_n_v[:, v_i] = hp.sphtfunc.smoothing(HI_n_v[:, v_i], fwhm=np.radians(smooth_fwhm/60.), pol=False)
         
-    print(IRHT.shape)
-    theta_RHT_n_v = np.mod(0.5*np.arctan2(URHT, QRHT), np.pi)
-    theta_RHT_n_v[np.where(IRHT <= 0)] = None
-    
+        print("IRHT shape {} IRHTslice shape {}".format(IRHT.shape, IRHTslice.shape))
+        theta_RHT_n_v[:, v_i] = np.mod(0.5*np.arctan2(URHT[:, v_i], QRHT[:, v_i]), np.pi)
+        theta_RHT_n_v[np.where(IRHTslice <= 0), v_i] = None
+        
     IHI = np.nansum(HI_n_v, axis=-1)
     QHI = np.nansum(HI_n_v*np.cos(2*theta_RHT_n_v), axis=-1)
     UHI = np.nansum(HI_n_v*np.sin(2*theta_RHT_n_v), axis=-1)
 
-    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth2{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
-    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth2{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
-    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth2{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
+    hp.fitsfunc.write_map("../data/IHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth3{}.fits".format(startvel, stopvel, smoothQUstr), IHI)
+    hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth3{}.fits".format(startvel, stopvel, smoothQUstr), QHI)
+    hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut_presmooth3{}.fits".format(startvel, stopvel, smoothQUstr), UHI)
 
         
         
