@@ -149,7 +149,7 @@ if __name__ == "__main__":
         #theta_RHT_n_v[:, v_i] = np.mod(0.5*np.arctan2(URHT[:, v_i], QRHT[:, v_i]), np.pi)
         #theta_RHT_n_v[np.where(IRHTslice <= 0), v_i] = None
         
-        theta_RHT_n_v[:, v_i] = np.mod(0.5*np.arctan2(-URHTsmooth, -QRHTsmooth, np.pi)
+        theta_RHT_n_v[:, v_i] = np.mod(0.5*np.arctan2(-URHTsmooth, -QRHTsmooth, np.pi))
         
         I_HI_tot += I_HIsmooth
         QRHT_tot += I_HIsmooth*QRHTsmooth
