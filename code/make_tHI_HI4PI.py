@@ -65,7 +65,8 @@ if __name__ == "__main__":
     wlen = 75
     thets = RHT_tools.get_thets(wlen, save = False)
     
-    all_vels = np.arange(81, 102)
+    #all_vels = np.arange(81, 102)
+    all_vels = np.arange(73, 112)
     nvels = len(all_vels)
     startvel = all_vels[0]
     stopvel = all_vels[-1]
@@ -74,12 +75,15 @@ if __name__ == "__main__":
     #QRHT = np.zeros((npix, nvels), np.float_)
     #URHT = np.zeros((npix, nvels), np.float_)
     HI_n_v = np.zeros((npix, nvels), np.float_)
-    #theta_RHT_n_v = np.zeros((npix, nvels), np.float_)
+    theta_RHT_n_v = np.zeros((npix, nvels), np.float_)
     #backproj_n_v = np.zeros((npix, nvels), np.float_)
     IRHT_tot = np.zeros(npix)
     QRHT_tot = np.zeros(npix)
     URHT_tot = np.zeros(npix)
     I_HI_tot = np.zeros(npix)
+
+    QRHT_tot_alt = np.zeros(npix)
+    URHT_tot_alt = np.zeros(npix)
     
     # step through all velocities
     for v_i, _vel in enumerate(all_vels):
@@ -145,10 +149,16 @@ if __name__ == "__main__":
         #theta_RHT_n_v[:, v_i] = np.mod(0.5*np.arctan2(URHT[:, v_i], QRHT[:, v_i]), np.pi)
         #theta_RHT_n_v[np.where(IRHTslice <= 0), v_i] = None
         
+        theta_RHT_n_v[:, v_i] = np.mod(0.5*np.arctan2(-URHTsmooth, -QRHTsmooth, np.pi)
+        
         I_HI_tot += I_HIsmooth
         QRHT_tot += I_HIsmooth*QRHTsmooth
         URHT_tot += I_HIsmooth*URHTsmooth
         #IRHT_tot += IRHTsmooth
+        
+        thetaRHTsmooth = np.mod(0.5*np.arctan2(-URHTsmooth, -QRHTsmooth), np.pi)
+        QRHT_tot_alt += I_HIsmooth*np.cos(2*thetaRHTsmooth)
+        URHT_tot_alt += I_HIsmooth*np.sin(2*thetaRHTsmooth)
         
     #IHI = np.nansum(HI_n_v, axis=-1)
     #QHI = np.nansum(HI_n_v*np.cos(2*theta_RHT_n_v), axis=-1)
@@ -161,5 +171,14 @@ if __name__ == "__main__":
     hp.fitsfunc.write_map("../data/QHI_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), QRHT_tot)
     hp.fitsfunc.write_map("../data/UHI_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), URHT_tot)
 
+    hp.fitsfunc.write_map("../data/QHI_alt_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), QRHT_tot_alt)
+    hp.fitsfunc.write_map("../data/UHI_alt_HI4PI_vels{}_to_{}_IRHTcut{}.fits".format(startvel, stopvel, smoothQUstr), URHT_tot_alt)
+
+    thetarrfn = "../data/thetaRHT_vels{}_to_{}_IRHTcut{}.h5".format(startvel, stopvel, smoothQUstr)
+    with h5py.File(thetarrfn, 'w') as f:
+    
+        dset = f.create_dataset(name='theta_arr', data=theta_RHT_n_v)
+        dset.attrs['startvel'] = startvel
+        dset.attrs['stopvel'] = stopvel
         
         
