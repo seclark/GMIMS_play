@@ -55,7 +55,7 @@ if __name__ == "__main__":
     
     # smooth QRHT and URHT
     smoothQU = True
-    smooth_fwhm = 180
+    smooth_fwhm = 60 #180
     if smoothQU:
         smoothQUstr = "_smooth{}".format(smooth_fwhm)
     else:
@@ -87,6 +87,7 @@ if __name__ == "__main__":
     
     # step through all velocities
     for v_i, _vel in enumerate(all_vels):
+        print("velocity {}, {}".format(v_i, vel))
         
         IRHT = np.zeros(npix)
         QRHT = np.zeros(npix)
@@ -98,7 +99,7 @@ if __name__ == "__main__":
             HI_n_v[:, v_i] = f['survey'][:, _vel]
         
         # get all filenames for given velocity
-        fns = get_list_fns(_vel, gal=True, data_root=data_root)
+        fns = get_list_fns(_vel, gal=True, data_root=data_root, wlen=wlen)
         
         for fn in fns:
             #hpix, hthets, backproj = get_RHT_data(data_root+fn, returnbp=True)
