@@ -87,7 +87,7 @@ if __name__ == "__main__":
     
     # step through all velocities
     for v_i, _vel in enumerate(all_vels):
-        print("velocity {}, {}".format(v_i, vel))
+        print("velocity {}, {}".format(v_i, _vel))
         
         IRHT = np.zeros(npix)
         QRHT = np.zeros(npix)
