@@ -55,7 +55,7 @@ if __name__ == "__main__":
     
     # smooth QRHT and URHT
     smoothQU = True
-    smooth_fwhm = 16
+    smooth_fwhm = 180
     if smoothQU:
         smoothQUstr = "_smooth{}".format(smooth_fwhm)
     else:
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     thets = RHT_tools.get_thets(wlen, save = False)
     
     #all_vels = np.arange(81, 102)
-    all_vels = np.arange(73, 112)
+    all_vels = np.arange(73, 110)#112)
     nvels = len(all_vels)
     startvel = all_vels[0]
     stopvel = all_vels[-1]
